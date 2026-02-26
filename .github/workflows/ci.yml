@@ -1,0 +1,25 @@
+name: CI - Build and Push
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Login to ACR
+      run: |
+        echo ${{ secrets.ACR_PASSWORD }} | docker login ${{ secrets.ACR_NAME }}.azurecr.io -u ${{ secrets.ACR_NAME }} --password-stdin
+
+    - name: Build image
+      run: |
+        docker build -t ${{ secrets.ACR_NAME }}.azurecr.io/flask-app:latest .
+
+    - name: Push image
+      run: |
+        docker push ${{ secrets.ACR_NAME }}.azurecr.io/flask-app:latest
